@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+title: "sk_video_stimulus"
+type: software
+authors:
+  - family-names: "Zelenskiy"
+    given-names: "Ilya"
+repository-code: "https://github.com/iproxy3d/sk_video_stimulus"
+license: MIT
+version: 0.1.0
+date-released: 2026-11-04

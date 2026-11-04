@@ -1,10 +1,10 @@
-# Calculated example data
+# Рассчитанные данные примеров
 
-| File | Meaning |
+| Файл | Назначение |
 |---|---|
-| `video_features.csv` | raw output for `input_25fps.mp4` |
-| `neutral_features.csv` | generated raw output used to build the neutral profile; omitted because the compact JSON profile is sufficient |
-| `normalized_features.csv` | calibrated example output |
-| `test_features.csv` | calibrated output for `test_25fps.mp4` |
+| `video_features.csv` | исходные признаки для `input_25fps.mp4` |
+| `neutral_features.csv` | исходные признаки нейтрального видео, использованные при построении профиля |
+| `normalized_features.csv` | пример нормализованных признаков |
+| `test_features.csv` | нормализованные признаки для `test_25fps.mp4` |
 
-Rows before `ready=true` belong to the rolling-window warm-up. Normalized columns are empty during this interval by design.
+Строки до `ready=true` относятся к прогреву скользящего окна. Нормализованные столбцы в этот период намеренно остаются пустыми.

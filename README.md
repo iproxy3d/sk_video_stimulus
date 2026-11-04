@@ -2,7 +2,7 @@
 
 **Потоковое преобразование видео в низкоуровневые характеристики динамики зрительного стимула.**
 
-[English](README_EN.md) · [Алгоритм](docs/algorithm.md) · [Калибровка](docs/calibration.md) · [Признаки](docs/features.md) · [Интеграция](docs/emotional-state-integration.md) · [Примеры](docs/examples.md)
+[Алгоритм](docs/algorithm.md) · [Калибровка](docs/calibration.md) · [Признаки](docs/features.md) · [Интеграция](docs/emotional-state-integration.md) · [Примеры](docs/examples.md)
 
 ![Из кадров видео во временную структуру зрительных стимулов](assets/images/03-temporal-structure.webp)
 

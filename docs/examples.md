@@ -8,7 +8,7 @@
 2. нейтральное видео — построение фиксированного фонового профиля;
 3. отдельное тестовое видео — проверка нормализованных признаков.
 
-Сами MP4 размещаются в [`examples/videos`](../examples/videos/README.md), а рассчитанные CSV уже находятся в [`examples/data`](../examples/data).
+Исходные MP4 находятся в [`examples/videos`](../examples/videos/README.md), а рассчитанные по ним CSV — в [`examples/data`](../examples/data).
 
 ## Как читать графики
 

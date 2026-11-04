@@ -1,17 +1,13 @@
-# Demonstration videos
+# Демонстрационные видео
 
-Place the three 25 FPS demonstration files in this directory:
+В каталоге находятся три коротких MP4 с частотой 25 кадров/с:
 
-```text
-examples/videos/input_25fps.mp4
-examples/videos/neutral_25fps.mp4
-examples/videos/test_25fps.mp4
-```
+| Файл | Назначение |
+|---|---|
+| [`input_25fps.mp4`](input_25fps.mp4) | извлечение исходного сигнала `x_t` и ненормализованных признаков |
+| [`neutral_25fps.mp4`](neutral_25fps.mp4) | построение фиксированного нейтрального профиля |
+| [`test_25fps.mp4`](test_25fps.mp4) | проверка нормализации на отдельном видео |
 
-Their roles are different:
+GitHub открывает каждый файл отдельной страницей со встроенным видеоплеером. Полный воспроизводимый сценарий приведён в разделе [«Быстрый запуск»](../../README.md#быстрый-запуск), а заранее рассчитанные результаты находятся в [`examples/data`](../data).
 
-- `input_25fps.mp4` demonstrates raw feature extraction;
-- `neutral_25fps.mp4` creates the fixed deployment baseline;
-- `test_25fps.mp4` demonstrates calibrated features on a separate video.
-
-The files are intentionally not stored here until their redistribution rights and sizes are confirmed. Do not rename them unless the commands in the documentation are updated as well.
+Не переименовывайте файлы без одновременного обновления команд в документации.

@@ -1,4 +1,6 @@
-"""Low-level visual stimulus dynamics extracted from video streams."""
+"""Низкоуровневая динамика зрительного стимула из видеопотока."""
+
+from importlib.metadata import PackageNotFoundError, version
 
 from .extractor import (
     EMOTION_ORDER,
@@ -19,7 +21,10 @@ from .extractor import (
     process_frames,
 )
 
-__version__ = "0.1.0"
+try:
+    __version__ = version("sk-video-stimulus")
+except PackageNotFoundError:  # Запуск непосредственно из дерева исходников.
+    __version__ = "0+unknown"
 
 __all__ = [
     "EMOTION_ORDER",

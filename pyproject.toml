@@ -1,18 +1,23 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "sk-video-stimulus"
 version = "0.1.0"
-description = "Low-level visual stimulus dynamics extracted from video streams"
-readme = "README.md"
+description = "Извлечение низкоуровневой динамики зрительного стимула из видео"
+readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Ilya Zelenskiy"}]
 keywords = ["video", "visual-stimulus", "motion-dynamics", "emotion-agents"]
 classifiers = [
   "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: Russian",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -29,7 +34,7 @@ dependencies = [
 video = ["opencv-python>=4.8"]
 plot = ["matplotlib>=3.7"]
 all = ["opencv-python>=4.8", "matplotlib>=3.7"]
-dev = ["coverage>=7.6", "build>=1.2"]
+dev = ["coverage>=7.6", "build>=1.2", "twine>=5.1"]
 
 [project.scripts]
 sk-video-stimulus = "sk_video_stimulus.extractor:main"
@@ -39,6 +44,7 @@ sk-video-stimulus-plot = "sk_video_stimulus.plotting:main"
 Homepage = "https://github.com/iproxy3d/sk_video_stimulus"
 Repository = "https://github.com/iproxy3d/sk_video_stimulus"
 Issues = "https://github.com/iproxy3d/sk_video_stimulus/issues"
+Documentation = "https://github.com/iproxy3d/sk_video_stimulus/tree/main/docs"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -2,9 +2,9 @@
 
 **Потоковое преобразование видео в низкоуровневые характеристики динамики зрительного стимула.**
 
-[Алгоритм](docs/algorithm.md) · [Калибровка](docs/calibration.md) · [Признаки](docs/features.md) · [Интеграция](docs/emotional-state-integration.md) · [Примеры](docs/examples.md)
+[Алгоритм](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/algorithm.md) · [Калибровка](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/calibration.md) · [Признаки](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/features.md) · [Интеграция](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/emotional-state-integration.md) · [Примеры](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md) · [Публикация](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/publishing.md)
 
-![Из кадров видео во временную структуру зрительных стимулов](assets/images/03-temporal-structure.webp)
+![Из кадров видео во временную структуру зрительных стимулов](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/03-temporal-structure.webp)
 
 `sk_video_stimulus` отвечает на вопрос **«как меняется зрительный поток во времени?»**. Пакет не распознаёт объекты, жесты или эмоции. Он превращает кадры видео либо поток камеры в одномерный сигнал `x_t`, а затем вычисляет четыре характеристики его динамики:
 
@@ -23,7 +23,13 @@
 
 ## Установка
 
-Из GitHub со всеми зависимостями для видео и графиков:
+После публикации в PyPI пакет со всеми зависимостями для видео и графиков устанавливается одной командой:
+
+```bash
+python -m pip install "sk-video-stimulus[all]"
+```
+
+Установка текущей версии непосредственно из GitHub:
 
 ```bash
 git clone https://github.com/iproxy3d/sk_video_stimulus.git
@@ -31,7 +37,7 @@ cd sk_video_stimulus
 python -m pip install -e ".[all]"
 ```
 
-Для программной обработки уже загруженных кадров достаточно базовой установки:
+Для разработки после клонирования репозитория используется редактируемая установка:
 
 ```bash
 python -m pip install -e .
@@ -39,7 +45,7 @@ python -m pip install -e .
 
 ## Быстрый запуск
 
-В [`examples/videos`](examples/videos/README.md) находятся три коротких видео с частотой 25 кадров/с. Они позволяют воспроизвести весь сценарий четырьмя командами без подготовки собственных данных.
+В [`examples/videos`](https://github.com/iproxy3d/sk_video_stimulus/tree/main/examples/videos) находятся три коротких видео с частотой 25 кадров/с. Они позволяют воспроизвести весь сценарий четырьмя командами без подготовки собственных данных.
 
 ### 1. Извлечь исходные признаки
 
@@ -99,31 +105,31 @@ for frame in frames:
 
 ## Что происходит внутри
 
-![Пространственное кодирование кадра](assets/images/01-spatial-encoding.webp)
+![Пространственное кодирование кадра](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/01-spatial-encoding.webp)
 
 Кадр переводится в оттенки серого и делится на области. В каждой области вычисляются отклики 15 знаковых пространственных масок. Между соседними кадрами измеряются быстрые и медленные изменения, после чего глобальный максимум по модулю образует `x_t` с сохранением знака.
 
-![От пространственных признаков к временному сигналу](assets/images/02-temporal-signal.webp)
+![От пространственных признаков к временному сигналу](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/02-temporal-signal.webp)
 
-Подробное математическое описание приведено в [docs/algorithm.md](docs/algorithm.md).
+Подробное математическое описание приведено в [документации алгоритма](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/algorithm.md).
 
 ## Нейтральная калибровка
 
 Абсолютное значение признака ещё не показывает значимость стимула: шум камеры, сжатие и микродвижения дают ненулевой фон. Поэтому пакет строит фиксированный профиль по нейтральному видео и измеряет отклонение текущего сигнала от него.
 
-![Калибровка нейтрального видеостимула](assets/images/04-neutral-calibration.webp)
+![Калибровка нейтрального видеостимула](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/04-neutral-calibration.webp)
 
-Пример готового профиля находится в [`examples/profiles/video_neutral_profile.json`](examples/profiles/video_neutral_profile.json).
+Пример готового профиля находится в [`examples/profiles/video_neutral_profile.json`](https://github.com/iproxy3d/sk_video_stimulus/blob/main/examples/profiles/video_neutral_profile.json).
 
 ## Результаты и диагностика
 
 Репозиторий содержит реальные CSV и заранее построенные графики:
 
-- [`examples/data`](examples/data) — сырые, нейтральные и нормализованные временные ряды;
-- [`assets/plots`](assets/plots) — временные графики, автокорреляция и спектр;
-- [docs/examples.md](docs/examples.md) — объяснение результатов и ограничений.
+- [`examples/data`](https://github.com/iproxy3d/sk_video_stimulus/tree/main/examples/data) — сырые, нейтральные и нормализованные временные ряды;
+- [`assets/plots`](https://github.com/iproxy3d/sk_video_stimulus/tree/main/assets/plots) — временные графики, автокорреляция и спектр;
+- [демонстрационные результаты](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md) — объяснение результатов и ограничений.
 
-![Сопоставление кадров с временными рядами](assets/images/05-frames-and-features.webp)
+![Сопоставление кадров с временными рядами](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/05-frames-and-features.webp)
 
 ## Место в системе эмоционального состояния
 
@@ -158,4 +164,4 @@ python -m unittest discover -s tests -v
 
 ## Лицензия
 
-Код распространяется по лицензии [MIT](LICENSE). Пользователь отвечает за право распространения добавляемых видео.
+Код распространяется по лицензии [MIT](https://github.com/iproxy3d/sk_video_stimulus/blob/main/LICENSE). Пользователь отвечает за право распространения добавляемых видео.

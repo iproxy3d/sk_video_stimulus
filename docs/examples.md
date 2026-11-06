@@ -1,5 +1,86 @@
 # Демонстрационные результаты
 
+## Два вида примеров
+
+Репозиторий разделяет программные примеры и интерактивную демонстрацию:
+
+| Вариант | Для чего нужен | Запуск |
+|---|---|---|
+| Python-примеры | показать прямой вызов API пакета в собственном коде | `examples/process_video_file.py`, `examples/process_webcam.py` |
+| Web dashboard | наглядно показать видео и потоковые графики в браузере | `sk-video-stimulus-demo` |
+
+## Обработка видеофайла из Python
+
+Установите поддержку OpenCV и запустите пример на приложенном видео:
+
+```bash
+python -m pip install "sk-video-stimulus[video]"
+sk-video-stimulus-video examples/videos/test_25fps.mp4
+```
+
+При работе из клонированного репозитория тот же пример доступен как файл:
+
+```bash
+python examples/process_video_file.py examples/videos/test_25fps.mp4
+```
+
+Основная часть примера намеренно короткая:
+
+```python
+import cv2
+
+from sk_video_stimulus import (
+    OscillationConfig,
+    SpatialEncoderConfig,
+    VideoFeatureExtractor,
+)
+
+capture = cv2.VideoCapture("example.mp4")
+fps = capture.get(cv2.CAP_PROP_FPS) or 25.0
+extractor = VideoFeatureExtractor(
+    SpatialEncoderConfig(fps=fps, input_color_order="bgr"),
+    OscillationConfig(fps=fps),
+)
+
+frame_index = 0
+while True:
+    ok, frame = capture.read()
+    if not ok:
+        break
+    sample = extractor.process_frame(frame, timestamp=frame_index / fps)
+    if sample.ready:
+        print(sample.activity, sample.anxiety, sample.tempo, sample.deviation)
+    frame_index += 1
+
+capture.release()
+```
+
+## Обработка веб-камеры из Python
+
+```bash
+python -m pip install "sk-video-stimulus[video]"
+sk-video-stimulus-webcam --camera 0
+```
+
+Эквивалентный запуск из клонированного репозитория:
+
+```bash
+python examples/process_webcam.py --camera 0
+```
+
+Пример открывает системное окно OpenCV, передаёт каждый кадр в `VideoFeatureExtractor` и накладывает текущие значения на изображение. Для завершения нажмите `Q` или `Esc`.
+
+## Интерактивная демонстрация
+
+Dashboard является отдельным пользовательским интерфейсом и не заменяет примеры API:
+
+```bash
+python -m pip install "sk-video-stimulus[demo]"
+sk-video-stimulus-demo
+```
+
+После запуска откройте `http://127.0.0.1:8000`. Можно разрешить браузеру доступ к веб-камере или выбрать видеофайл. Подробности приведены в [`dashboard.md`](dashboard.md).
+
 ## Состав
 
 Репозиторий содержит рассчитанные результаты трёх сценариев:

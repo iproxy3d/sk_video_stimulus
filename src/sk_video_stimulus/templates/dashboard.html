@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sk_video_stimulus — потоковое демо</title>
+  <style>
+    :root { color-scheme: dark; --bg:#07111f; --panel:#0d1b2d; --line:#203a58; --text:#e8f3ff; --muted:#8ba5bf; --blue:#49b9ff; --green:#39dfaa; --orange:#ffad42; --purple:#b68cff; --red:#ff6680; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font:15px/1.45 Inter,system-ui,sans-serif; color:var(--text); background:radial-gradient(circle at 15% 0,#123052 0,transparent 35%),var(--bg); }
+    header { padding:24px clamp(18px,4vw,52px) 12px; }
+    h1 { margin:0; font-size:clamp(24px,4vw,42px); letter-spacing:-.03em; }
+    header p { color:var(--muted); max-width:860px; margin:8px 0 0; }
+    main { padding:14px clamp(18px,4vw,52px) 38px; display:grid; gap:18px; grid-template-columns:minmax(300px,.82fr) minmax(420px,1.18fr); }
+    .panel { background:rgba(13,27,45,.94); border:1px solid var(--line); border-radius:18px; box-shadow:0 18px 50px #0005; overflow:hidden; }
+    .controls { padding:14px; display:flex; flex-wrap:wrap; gap:9px; align-items:center; border-bottom:1px solid var(--line); }
+    button,.file-label { border:1px solid #2d567e; color:var(--text); background:#122b45; border-radius:10px; padding:9px 13px; cursor:pointer; font-weight:650; }
+    button:hover,.file-label:hover { background:#173957; }
+    button.primary { background:#087cc2; border-color:#18a9fa; }
+    button.danger { background:#442032; border-color:#82415b; }
+    input[type=file] { display:none; }
+    label.fps { color:var(--muted); margin-left:auto; display:flex; gap:7px; align-items:center; }
+    input[type=number] { width:62px; background:#071524; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:7px; }
+    .video-wrap { position:relative; aspect-ratio:16/10; background:#03070c; display:grid; place-items:center; }
+    video { width:100%; height:100%; object-fit:contain; }
+    .badge { position:absolute; top:12px; left:12px; padding:6px 9px; border-radius:999px; background:#06101bdb; border:1px solid var(--line); color:var(--muted); font-size:12px; }
+    .status { padding:12px 15px; color:var(--muted); border-top:1px solid var(--line); min-height:45px; }
+    .status.ok { color:var(--green); } .status.error { color:var(--red); }
+    .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; padding:13px; }
+    .card { background:#091625; border:1px solid var(--line); border-radius:12px; padding:10px; min-width:0; }
+    .card span { color:var(--muted); display:block; font-size:12px; overflow:hidden; text-overflow:ellipsis; }
+    .card strong { font:700 19px ui-monospace,monospace; }
+    .charts { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:13px; }
+    .chart { background:#091625; border:1px solid var(--line); border-radius:12px; padding:9px; min-width:0; }
+    .chart.wide { grid-column:1/-1; }
+    .chart h2 { font-size:13px; margin:0 0 7px; color:var(--muted); font-weight:600; }
+    canvas { display:block; width:100%; height:125px; }
+    .hint { margin:0 13px 13px; padding:11px 13px; background:#09243a; border:1px solid #174a70; border-radius:12px; color:#a9cce8; font-size:13px; }
+    @media (max-width:960px) { main { grid-template-columns:1fr; } }
+    @media (max-width:560px) { .cards { grid-template-columns:1fr 1fr; } .charts { grid-template-columns:1fr; } .chart.wide { grid-column:auto; } label.fps { margin-left:0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>sk_video_stimulus</h1>
+    <p>Потоковая обработка камеры или видеофайла. Кадры анализируются локально запущенным Python-пакетом; распознавание объектов и эмоций не выполняется.</p>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="controls">
+        <button id="cameraButton" class="primary">Веб-камера</button>
+        <label class="file-label" for="fileInput">Выбрать видео</label>
+        <input id="fileInput" type="file" accept="video/*">
+        <button id="stopButton" class="danger">Остановить</button>
+        <label class="fps">Обработка, FPS <input id="fpsInput" type="number" value="12" min="1" max="30"></label>
+      </div>
+      <div class="video-wrap">
+        <video id="video" playsinline muted></video>
+        <div id="sourceBadge" class="badge">источник не выбран</div>
+      </div>
+      <div id="status" class="status">Разрешите доступ к камере или выберите локальный видеофайл.</div>
+      <div class="cards">
+        <div class="card"><span>x_t</span><strong id="valueXt">—</strong></div>
+        <div class="card"><span>activity</span><strong id="valueActivity">—</strong></div>
+        <div class="card"><span>anxiety</span><strong id="valueAnxiety">—</strong></div>
+        <div class="card"><span>tempo</span><strong id="valueTempo">—</strong></div>
+        <div class="card"><span>deviation</span><strong id="valueDeviation">—</strong></div>
+        <div class="card"><span>events</span><strong id="valueEvents">—</strong></div>
+        <div class="card"><span>кадр</span><strong id="valueFrame">—</strong></div>
+        <div class="card"><span>режим</span><strong id="valueReady">прогрев</strong></div>
+      </div>
+      <p class="hint">Первые секунды нужны для заполнения временного окна. Камера работает на localhost; кадры не отправляются во внешние сервисы.</p>
+    </section>
+    <section class="panel charts">
+      <div class="chart wide"><h2>Быстрый зрительный сигнал x_t</h2><canvas id="chartXt"></canvas></div>
+      <div class="chart"><h2>activity</h2><canvas id="chartActivity"></canvas></div>
+      <div class="chart"><h2>anxiety</h2><canvas id="chartAnxiety"></canvas></div>
+      <div class="chart"><h2>tempo, событий/с</h2><canvas id="chartTempo"></canvas></div>
+      <div class="chart"><h2>deviation</h2><canvas id="chartDeviation"></canvas></div>
+    </section>
+  </main>
+  <canvas id="captureCanvas" hidden></canvas>
+  <script>
+    const video=document.getElementById('video'), captureCanvas=document.getElementById('captureCanvas');
+    const statusEl=document.getElementById('status'), badge=document.getElementById('sourceBadge');
+    const maxPoints=240, history={x_t:[],activity:[],anxiety:[],tempo:[],deviation:[]};
+    const colors={x_t:'#49b9ff',activity:'#39dfaa',anxiety:'#b68cff',tempo:'#ffad42',deviation:'#ff6680'};
+    let sessionId=null, running=false, stream=null, generation=0, startedAt=0, objectUrl=null;
+    function setStatus(text,type=''){statusEl.textContent=text;statusEl.className='status '+type;}
+    function resetHistory(){Object.values(history).forEach(a=>a.length=0); drawAll(); ['Xt','Activity','Anxiety','Tempo','Deviation','Events','Frame'].forEach(k=>document.getElementById('value'+k).textContent='—'); document.getElementById('valueReady').textContent='прогрев';}
+    async function newSession(){const fps=Math.max(1,Math.min(30,Number(document.getElementById('fpsInput').value)||12)); const response=await fetch('/api/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fps})}); const data=await response.json(); if(!response.ok)throw new Error(data.error||'Не удалось создать сессию'); sessionId=data.session_id; return fps;}
+    function stop(){running=false;generation++;video.pause();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}setStatus('Обработка остановлена.');}
+    async function start(){resetHistory();const fps=await newSession();running=true;const myGeneration=++generation;startedAt=performance.now();await video.play();setStatus('Идёт обработка. Для заполнения окна требуется прогрев.','ok');processLoop(myGeneration,fps);}
+    document.getElementById('cameraButton').onclick=async()=>{try{stop();if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}stream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});video.src='';video.srcObject=stream;badge.textContent='веб-камера';await start();}catch(e){setStatus(e.message,'error');}};
+    document.getElementById('fileInput').onchange=async event=>{const file=event.target.files[0];if(!file)return;try{stop();if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(file);video.srcObject=null;video.src=objectUrl;video.loop=false;badge.textContent=file.name;await new Promise((resolve,reject)=>{video.onloadedmetadata=resolve;video.onerror=()=>reject(new Error('Браузер не смог открыть видео'));});await start();}catch(e){setStatus(e.message,'error');}};
+    document.getElementById('stopButton').onclick=stop;
+    video.onended=()=>{running=false;setStatus('Видео обработано до конца.','ok');};
+    async function processLoop(myGeneration,fps){const delay=1000/fps;while(running&&generation===myGeneration){const tick=performance.now();try{if(video.readyState>=2&&video.videoWidth){captureCanvas.width=Math.min(video.videoWidth,640);captureCanvas.height=Math.round(captureCanvas.width*video.videoHeight/video.videoWidth);captureCanvas.getContext('2d').drawImage(video,0,0,captureCanvas.width,captureCanvas.height);const blob=await new Promise(r=>captureCanvas.toBlob(r,'image/jpeg',.78));const form=new FormData();form.append('session_id',sessionId);form.append('timestamp',((performance.now()-startedAt)/1000).toFixed(6));form.append('frame',blob,'frame.jpg');const response=await fetch('/api/frame',{method:'POST',body:form});const data=await response.json();if(!response.ok)throw new Error(data.error||'Ошибка обработки');update(data);}}catch(e){running=false;setStatus(e.message,'error');break;}const rest=Math.max(0,delay-(performance.now()-tick));await new Promise(r=>setTimeout(r,rest));}}
+    function update(s){for(const key of Object.keys(history)){history[key].push(Number(s[key])||0);if(history[key].length>maxPoints)history[key].shift();}const values={Xt:s.x_t,Activity:s.activity,Anxiety:s.anxiety,Tempo:s.tempo,Deviation:s.deviation,Events:s.events,Frame:s.frame_index};for(const [key,value] of Object.entries(values))document.getElementById('value'+key).textContent=typeof value==='number'&&!Number.isInteger(value)?value.toFixed(3):value;document.getElementById('valueReady').textContent=s.ready?'готово':'прогрев';drawAll();}
+    function drawChart(id,key,fixedRange=null){const canvas=document.getElementById(id),dpr=window.devicePixelRatio||1,w=canvas.clientWidth,h=canvas.clientHeight;if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.strokeStyle='#19324b';ctx.lineWidth=1;for(let i=1;i<4;i++){const y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}const values=history[key];if(values.length<2)return;let min,max;if(fixedRange){[min,max]=fixedRange;}else{min=Math.min(0,...values);max=Math.max(...values,0.01);const pad=Math.max((max-min)*.12,.005);min-=pad;max+=pad;}ctx.strokeStyle=colors[key];ctx.lineWidth=2;ctx.beginPath();values.forEach((value,index)=>{const x=index/(maxPoints-1)*w,y=h-(value-min)/(max-min)*h;if(index===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();}
+    function drawAll(){drawChart('chartXt','x_t',[-1,1]);drawChart('chartActivity','activity',[-1,1]);drawChart('chartAnxiety','anxiety');drawChart('chartTempo','tempo');drawChart('chartDeviation','deviation',[0,1]);}
+    window.addEventListener('resize',drawAll);drawAll();
+  </script>
+</body>
+</html>

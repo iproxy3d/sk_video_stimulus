@@ -7,5 +7,5 @@ authors:
     given-names: "Ilya"
 repository-code: "https://github.com/iproxy3d/sk_video_stimulus"
 license: MIT
-version: 0.1.0
-date-released: 2026-11-04
+version: 0.2.0
+date-released: 2026-11-06

@@ -5,7 +5,7 @@
 
 **Потоковое преобразование видео в низкоуровневые характеристики динамики зрительного стимула.**
 
-[Алгоритм](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/algorithm.md) · [Калибровка](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/calibration.md) · [Признаки](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/features.md) · [Интеграция](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/emotional-state-integration.md) · [Примеры](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md) · [Публикация](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/publishing.md)
+[Алгоритм](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/algorithm.md) · [Калибровка](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/calibration.md) · [Признаки](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/features.md) · [Примеры](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md) · [Web dashboard](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/dashboard.md) · [Интеграция](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/emotional-state-integration.md)
 
 ![Из кадров видео во временную структуру зрительных стимулов](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/03-temporal-structure.webp)
 
@@ -46,7 +46,8 @@ python -m pip install sk-video-stimulus
 |---|---|---|
 | `video` | `python -m pip install "sk-video-stimulus[video]"` | чтение видеофайлов и веб-камеры через OpenCV |
 | `plot` | `python -m pip install "sk-video-stimulus[plot]"` | построение диагностических графиков |
-| `all` | `python -m pip install "sk-video-stimulus[all]"` | видео и графики |
+| `demo` | `python -m pip install "sk-video-stimulus[demo]"` | локальный web dashboard |
+| `all` | `python -m pip install "sk-video-stimulus[all]"` | видео, графики и dashboard |
 
 Для разработки из исходного кода:
 
@@ -116,6 +117,33 @@ for frame in frames:
 
 Состояние потокового анализатора можно сохранить через `state_dict()` и восстановить через `load_state_dict()`.
 
+## Готовые примеры Python
+
+Пример обработки видеофайла использует OpenCV только для чтения кадров, а каждый кадр передаёт публичному API пакета:
+
+```bash
+sk-video-stimulus-video examples/videos/test_25fps.mp4
+```
+
+Пример веб-камеры показывает изображение и текущие значения признаков. Для выхода нажмите `Q` или `Esc`:
+
+```bash
+sk-video-stimulus-webcam --camera 0
+```
+
+Обе команды устанавливаются вместе с вариантом `[video]` или `[all]`. Исходный код простых примеров находится в каталоге [`examples`](https://github.com/iproxy3d/sk_video_stimulus/tree/main/examples), где их также можно запустить как обычные `.py`-файлы. Подробное объяснение приведено в [документации примеров](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md).
+
+## Интерактивный web dashboard
+
+Dashboard — отдельная демонстрация возможностей алгоритма. Он принимает поток браузерной камеры или локальный видеофайл, показывает исходное изображение и в реальном времени строит графики `x_t`, `activity`, `anxiety`, `tempo` и `deviation`.
+
+```bash
+python -m pip install "sk-video-stimulus[demo]"
+sk-video-stimulus-demo
+```
+
+Затем откройте [http://127.0.0.1:8000](http://127.0.0.1:8000). Обработка выполняется локально: браузер отправляет кадры только запущенному на компьютере Python-серверу. Полная инструкция: [docs/dashboard.md](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/dashboard.md).
+
 ## Что происходит внутри
 
 ![Пространственное кодирование кадра](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/01-spatial-encoding.webp)
@@ -155,8 +183,11 @@ for frame in frames:
 ```text
 src/sk_video_stimulus/
 ├── extractor.py        # кадры → x_t → четыре признака → калибровка
-└── plotting.py         # временные ряды, ACF и частотный спектр
+├── plotting.py         # временные ряды, ACF и частотный спектр
+├── dashboard.py        # локальный HTTP API и запуск web dashboard
+└── templates/          # браузерный интерфейс dashboard
 tests/                  # алгоритмические и интеграционные тесты
+examples/*.py           # простые примеры видеофайла и веб-камеры
 examples/data/          # готовые CSV
 examples/profiles/      # нейтральный профиль
 examples/videos/        # три демонстрационных MP4 с частотой 25 кадров/с

@@ -1,5 +1,8 @@
 # sk_video_stimulus
 
+[![PyPI](https://img.shields.io/pypi/v/sk-video-stimulus.svg)](https://pypi.org/project/sk-video-stimulus/)
+[![Python](https://img.shields.io/pypi/pyversions/sk-video-stimulus.svg)](https://pypi.org/project/sk-video-stimulus/)
+
 **Потоковое преобразование видео в низкоуровневые характеристики динамики зрительного стимула.**
 
 [Алгоритм](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/algorithm.md) · [Калибровка](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/calibration.md) · [Признаки](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/features.md) · [Интеграция](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/emotional-state-integration.md) · [Примеры](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md) · [Публикация](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/publishing.md)
@@ -23,24 +26,34 @@
 
 ## Установка
 
-После публикации в PyPI пакет со всеми зависимостями для видео и графиков устанавливается одной командой:
+Пакет опубликован в [PyPI](https://pypi.org/project/sk-video-stimulus/) и поддерживает Python 3.10–3.12.
+
+Рекомендуемая установка со всеми зависимостями для чтения видео и построения графиков:
 
 ```bash
 python -m pip install "sk-video-stimulus[all]"
 ```
 
-Установка текущей версии непосредственно из GitHub:
+Минимальная установка для обработки уже загруженных кадров:
+
+```bash
+python -m pip install sk-video-stimulus
+```
+
+Доступные дополнительные зависимости:
+
+| Вариант | Команда | Назначение |
+|---|---|---|
+| `video` | `python -m pip install "sk-video-stimulus[video]"` | чтение видеофайлов и веб-камеры через OpenCV |
+| `plot` | `python -m pip install "sk-video-stimulus[plot]"` | построение диагностических графиков |
+| `all` | `python -m pip install "sk-video-stimulus[all]"` | видео и графики |
+
+Для разработки из исходного кода:
 
 ```bash
 git clone https://github.com/iproxy3d/sk_video_stimulus.git
 cd sk_video_stimulus
 python -m pip install -e ".[all]"
-```
-
-Для разработки после клонирования репозитория используется редактируемая установка:
-
-```bash
-python -m pip install -e .
 ```
 
 ## Быстрый запуск

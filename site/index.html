@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>От видеокадров к динамике зрительного стимула · sk_video_stimulus</title>
+<meta name="description" content="Как sk_video_stimulus преобразует видео и поток веб-камеры в сигнал x_t, признаки activity, anxiety, tempo и deviation, выполняет нейтральную калибровку и работает в реальном времени.">
+<meta property="og:title" content="От видеокадров к динамике зрительного стимула">
+<meta property="og:description" content="Полная статья об алгоритме sk_video_stimulus: пространственное кодирование, временной сигнал, оконные признаки, калибровка и dashboard.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://iproxy3d.github.io/sk_video_stimulus/">
+<meta property="og:image" content="https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/03-temporal-structure.webp">
+<style>
+:root{--ink:#172033;--muted:#606b7c;--line:#dce3ed;--paper:#fff;--general:#7357c8;--general-soft:#f3efff;--business:#087b79;--business-soft:#eaf8f6;--tech:#315e9d;--tech-soft:#edf4ff;--warm:#d97a3a;--warm-soft:#fff5ec;--shadow:0 18px 55px rgba(29,42,65,.11)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#edf0f5;color:var(--ink);font:17px/1.64 Inter,"Segoe UI",Arial,sans-serif}.document{max-width:1240px;margin:auto;background:#fff;box-shadow:var(--shadow)}.wrap{max-width:1080px;margin:auto;padding:0 42px}h1,h2,h3,h4{line-height:1.18;letter-spacing:-.025em}h1{font-size:54px;margin:0 0 20px}h2{font-size:39px;margin:0 0 20px}h3{font-size:29px;margin:58px 0 16px}h4{font-size:20px;margin:28px 0 8px}p{margin:0 0 17px}a{color:inherit}.hero{padding:76px 0 62px;background:radial-gradient(circle at 88% 4%,#dcd4ff 0,transparent 32%),radial-gradient(circle at 63% 88%,#d7f4ef 0,transparent 28%),linear-gradient(145deg,#fafaff,#f4f6fa)}.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:42px;align-items:center}.hero p{font-size:21px;color:#465167}.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:var(--general);margin-bottom:14px}.chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:25px}.chip{font-size:13px;padding:7px 12px;background:#fff;border:1px solid #d9dfea;border-radius:99px;color:#465167}.hero-visual{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:22px;box-shadow:0 20px 48px rgba(67,63,137,.16)}.hero-actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:26px}.button{display:inline-block;padding:11px 16px;border-radius:11px;text-decoration:none;font-size:14px;font-weight:800;background:var(--tech);color:#fff}.button.secondary{background:#fff;color:var(--tech);border:1px solid #cbd8e8}.nav{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.nav .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-top:13px;padding-bottom:13px}.nav a{text-decoration:none;border-radius:10px;padding:9px 13px;font-weight:750;font-size:14px}.nav a span{display:block;color:var(--muted);font-size:12px;font-weight:450}.nav .g{background:var(--general-soft)}.nav .b{background:var(--business-soft)}.nav .t{background:var(--tech-soft)}.nav .w{background:var(--warm-soft)}.reader-map{padding:42px 0}.map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.map{padding:23px;border-radius:16px;border:1px solid var(--line)}.map b{display:block;font-size:19px;margin-bottom:6px}.section{padding:78px 0 88px;border-top:1px solid var(--line);scroll-margin-top:92px}.section-head{display:grid;grid-template-columns:130px 1fr;gap:25px;align-items:start;margin-bottom:40px}.part{font-size:13px;font-weight:850;text-transform:uppercase;letter-spacing:.11em;border-radius:12px;padding:14px;text-align:center}.lead{font-size:21px;color:#465167}.general .part{background:var(--general-soft);color:var(--general)}.business .part{background:var(--business-soft);color:var(--business)}.technical .part{background:var(--tech-soft);color:var(--tech)}.research .part{background:var(--warm-soft);color:var(--warm)}.principle{display:grid;grid-template-columns:160px 1fr;gap:18px;margin:24px 0;padding:21px;border-radius:15px;background:var(--general-soft)}.principle b{color:var(--general)}.cards2,.cards3,.cards4{display:grid;gap:17px;margin:25px 0}.cards2{grid-template-columns:repeat(2,1fr)}.cards3{grid-template-columns:repeat(3,1fr)}.cards4{grid-template-columns:repeat(4,1fr)}.card{padding:21px;border:1px solid var(--line);border-radius:15px;background:#fff}.card p:last-child{margin-bottom:0}.tag{display:inline-block;border-radius:99px;padding:4px 9px;font-size:12px;font-weight:800;margin-bottom:10px}.general .tag{background:var(--general-soft);color:var(--general)}.business .tag{background:var(--business-soft);color:var(--business)}.technical .tag{background:var(--tech-soft);color:var(--tech)}.research .tag{background:var(--warm-soft);color:var(--warm)}.callout{margin:30px 0;padding:22px 25px;border-left:5px solid var(--general);background:#f7f4ff;border-radius:0 14px 14px 0}.business .callout{border-color:var(--business);background:#effaf8}.technical .callout{border-color:var(--tech);background:#f1f6ff}.research .callout{border-color:var(--warm);background:var(--warm-soft)}.warning{border-color:var(--warm)!important;background:var(--warm-soft)!important}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:stretch;margin:30px 0}.flowbox{position:relative;padding:17px 13px;border:1px solid var(--line);border-radius:13px;background:#fff;text-align:center;font-weight:780}.flowbox:not(:last-child):after{content:'→';position:absolute;right:-17px;top:50%;transform:translateY(-50%);z-index:2;color:#8b96a8;font-size:21px}.flowbox small{display:block;color:var(--muted);font-weight:450;margin-top:5px}.benefit-table,.params{width:100%;border-collapse:collapse;margin:28px 0;font-size:15px}.benefit-table th,.benefit-table td,.params th,.params td{padding:14px 15px;text-align:left;vertical-align:top;border:1px solid var(--line)}.benefit-table th{background:#eef8f7;color:#075f5e}.params th{background:#edf4ff;color:#294f83}.params td:first-child{font:19px "Cambria Math",Cambria,serif;color:var(--tech);font-weight:700}.formula{font:27px/1.4 "Cambria Math",Cambria,Georgia,serif;text-align:center;padding:19px;margin:22px 0;background:#f2f6fd;border:1px solid #d8e3f3;border-radius:13px;overflow:auto}.formula.small{font-size:21px}.code{margin:22px 0;padding:20px 22px;border-radius:14px;background:#172238;color:#e8eef8;font:14px/1.55 Consolas,"Courier New",monospace;white-space:pre-wrap;overflow:auto}.steps{counter-reset:step;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:25px 0}.step{counter-increment:step;padding:19px;border:1px solid var(--line);border-radius:14px}.step:before{content:counter(step);display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:var(--tech);color:#fff;font-weight:800;margin-bottom:11px}.source-note{font-size:13px;color:var(--muted);padding:14px 18px;background:#f6f7f9;border-radius:10px;margin-top:25px}.footer{padding:33px 0;background:#182238;color:#cdd5e2;font-size:14px}.muted{color:var(--muted)}.article-figure{margin:34px 0;padding:12px;border:1px solid var(--line);border-radius:18px;background:#fafbfd;box-shadow:0 12px 32px rgba(33,64,105,.06)}.article-figure img{display:block;width:100%;height:auto;border-radius:12px}.article-figure figcaption{padding:12px 9px 3px;color:var(--muted);font-size:14px;text-align:center}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:24px 0}.metric{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff}.metric strong{display:block;color:var(--tech);font-size:18px}.metric span{display:block;margin-top:5px;color:var(--muted);font-size:14px}.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:24px 0}.check{padding:16px 18px;border:1px solid #d4e5dc;border-radius:12px;background:#f7fcf9}.check b{display:block;color:#167052;margin-bottom:4px}.breadcrumb{margin-bottom:17px;color:var(--muted);font-size:14px}.breadcrumb a{text-decoration:none}.topline{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:22px}.topline a{color:var(--tech);font-weight:750;text-decoration:none;font-size:14px}.toc-list{columns:2;column-gap:32px;margin:20px 0;padding-left:21px}.toc-list li{break-inside:avoid;margin:8px 0}.toc-list a{text-decoration:none;border-bottom:1px dotted #9aa7ba}.footer-links{display:flex;gap:18px;flex-wrap:wrap;margin-top:9px}.footer-links a{color:#fff;text-decoration:none;font-weight:700}
+@media(max-width:1000px){.flow{grid-template-columns:1fr}.flowbox:not(:last-child):after{content:'↓';right:auto;top:auto;left:50%;bottom:-22px;transform:translateX(-50%)}}
+@media(max-width:850px){body{font-size:16px}.wrap{padding:0 20px}.hero{padding-top:42px}.hero-grid,.section-head,.map-grid,.cards2,.cards3,.cards4,.steps,.metric-grid,.checks{grid-template-columns:1fr}h1{font-size:39px}h2{font-size:32px}.nav{position:static}.nav .wrap{grid-template-columns:1fr}.principle{grid-template-columns:1fr}.hero-visual{max-width:620px;margin:12px auto 0;border-radius:16px}.benefit-table,.params{display:block;overflow-x:auto}.toc-list{columns:1}.topline{align-items:flex-start;flex-direction:column}}
+@media print{body{background:#fff}.document{box-shadow:none}.nav{position:static}.card,.callout,.formula,.article-figure{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main class="document">
+  <header class="hero" id="top">
+    <div class="wrap">
+      <div class="topline">
+        <div class="breadcrumb"><a href="https://github.com/iproxy3d/sk_video_stimulus">sk_video_stimulus</a> · исследовательская статья</div>
+        <a href="https://pypi.org/project/sk-video-stimulus/">PyPI · sk-video-stimulus</a>
+      </div>
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Видео как сенсорный временной сигнал</div>
+          <h1>От видеокадров к динамике зрительного стимула</h1>
+          <p>Как превратить видео или поток веб-камеры в измеримый сигнал <b>x<sub>t</sub></b>, выделить активность, нерегулярность, темп и силу отклонения — без распознавания объектов и эмоций.</p>
+          <div class="chips">
+            <span class="chip">Python 3.10–3.12</span>
+            <span class="chip">потоковая обработка</span>
+            <span class="chip">нейтральная калибровка</span>
+            <span class="chip">web dashboard</span>
+          </div>
+          <div class="hero-actions">
+            <a class="button" href="https://github.com/iproxy3d/sk_video_stimulus">Исходный код</a>
+            <a class="button secondary" href="#practice">Запустить пример</a>
+          </div>
+        </div>
+        <img class="hero-visual" src="assets/images/03-temporal-structure.webp" alt="Из кадров видео возникает временная структура зрительных стимулов">
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Навигация по статье">
+    <div class="wrap">
+      <a class="g" href="#idea">1. Идея<span>Что именно измеряет пакет</span></a>
+      <a class="t" href="#signal">2. Сигнал x<sub>t</sub><span>От кадра к одному отсчёту</span></a>
+      <a class="b" href="#features">3. Признаки<span>Окно, события и калибровка</span></a>
+      <a class="w" href="#practice">4. Практика<span>Код, dashboard и интеграция</span></a>
+    </div>
+  </nav>
+
+  <section class="reader-map">
+    <div class="wrap">
+      <div class="map-grid">
+        <div class="map"><b>Если вы знакомитесь с методом</b>Начните с различия между смыслом кадра и динамикой зрительного потока.</div>
+        <div class="map"><b>Если вы реализуете pipeline</b>Перейдите к формулам пространственного кодирования, baseline и оконных признаков.</div>
+        <div class="map"><b>Если хотите проверить пакет</b>Установите PyPI-пакет и запустите готовое видео, веб-камеру или локальный dashboard.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section general" id="idea">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="part">Часть I<br>Идея</div>
+        <div><h2>Один кадр — два разных источника информации</h2><p class="lead">Семантика отвечает на вопрос «что происходит?», а низкоуровневый канал — «насколько сильно и каким образом меняется зрительный поток?»</p></div>
+      </div>
+
+      <div class="cards2">
+        <article class="card"><span class="tag">Смысловой уровень</span><h4>Что происходит в кадре?</h4><p>Кто действует, какое действие выполняется, на какой объект оно направлено и при каких обстоятельствах. Для этого нужна отдельная модель компьютерного зрения, например Florence-2 SVOA.</p></article>
+        <article class="card"><span class="tag">Сенсорный уровень</span><h4>Как меняется изображение?</h4><p>Насколько изменения сильны, регулярны, часты и отличаются от спокойного режима. Именно этот уровень реализует <code>sk_video_stimulus</code>.</p></article>
+      </div>
+
+      <div class="callout"><b>Сенсорная динамика не является эмоцией.</b> Резкое движение может сопровождать страх, радость, гнев, игру, монтажную склейку или перемещение камеры. Пакет измеряет воздействие видеопотока, но не приписывает человеку эмоциональное состояние.</div>
+
+      <div class="flow">
+        <div class="flowbox">Кадры<small>видео или камера</small></div>
+        <div class="flowbox">μ-компоненты<small>структура яркости</small></div>
+        <div class="flowbox">x<sub>t</sub><small>один отсчёт на кадр</small></div>
+        <div class="flowbox">Оконный анализ<small>пики и колебания</small></div>
+        <div class="flowbox">4 признака<small>динамика стимула</small></div>
+      </div>
+
+      <h3>Что пакет намеренно не делает</h3>
+      <div class="cards3">
+        <div class="card"><h4>Не распознаёт объекты</h4><p>В алгоритме нет детектора лиц, поз, жестов или предметов.</p></div>
+        <div class="card"><h4>Не использует оптический поток</h4><p>Сравниваются структурные отклики фиксированных областей, а не векторы движения пикселей.</p></div>
+        <div class="card"><h4>Не определяет эмоцию</h4><p>Даже признак <code>anxiety</code> означает нерегулярность сигнала, а не тревогу человека.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section technical" id="signal">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="part">Часть II<br>Сигнал</div>
+        <div><h2>От кадра к последовательности x<sub>t</sub></h2><p class="lead">Каждый кадр кодируется одинаковым пространственным базисом, сравнивается с быстрым и медленным состоянием, после чего один глобальный победитель становится новым отсчётом.</p></div>
+      </div>
+
+      <h3>1. Фиксированная геометрия</h3>
+      <p>Кадр приводится к фиксированному размеру, переводится в оттенки серого и нормируется в диапазон <code>[0, 1]</code>. По умолчанию используется изображение 256 × 256 пикселей и сетка 4 × 4 областей. Каждая область дополнительно делится на 16 ячеек.</p>
+
+      <div class="formula small">m<sub>t,r,a,b</sub> = Σ I<sub>t</sub>(x,y), &nbsp; (x,y) ∈ G<sub>r,a,b</sub>, &nbsp; a,b ∈ {0,1,2,3}</div>
+
+      <p>Суммы яркости образуют матрицу визуальных масс 4 × 4. Размер кадра, области и внутренней сетки остаются постоянными на протяжении потока.</p>
+
+      <figure class="article-figure">
+        <img src="assets/images/01-spatial-encoding.webp" alt="Пространственное кодирование кадра через визуальные массы и пятнадцать масок">
+        <figcaption>Кадр делится на области, каждая область — на матрицу визуальных масс, после чего вычисляются 15 структурных откликов.</figcaption>
+      </figure>
+
+      <h3>2. Пятнадцать структурных компонентов</h3>
+      <p>Используются четыре знаковых паттерна:</p>
+      <div class="formula small">w<sub>0</sub>=[+1,+1,+1,+1] &nbsp; w<sub>1</sub>=[+1,+1,−1,−1]<br>w<sub>2</sub>=[+1,−1,−1,+1] &nbsp; w<sub>3</sub>=[+1,−1,+1,−1]</div>
+      <p>Их внешние произведения дают 16 масок 4 × 4. Маска общей яркости исключается, а остальные 15 описывают пространственные противопоставления внутри области.</p>
+      <div class="formula small">μ<sub>i,t,r</sub> = Σ<sub>a=0..3</sub> Σ<sub>b=0..3</sub> F<sub>i</sub>(a,b) · m<sub>t,r,a,b</sub>, &nbsp; i=1,…,15</div>
+      <p>Один кадр превращается в тензор <b>μ<sub>t</sub> ∈ ℝ<sup>R×15</sup></b>. Компоненты описывают структуру яркости, а не объект.</p>
+
+      <h3>3. Быстрый и медленный каналы</h3>
+      <div class="cards2">
+        <div class="card"><span class="tag">fast</span><h4>Что изменилось прямо сейчас?</h4><div class="formula small">Δμ<sub>t</sub><sup>fast</sup> = μ<sub>t</sub> − μ<sub>t−1</sub></div><p>Канал реагирует на межкадровое изменение: движение, появление, исчезновение, вспышку или склейку.</p></div>
+        <div class="card"><span class="tag">slow</span><h4>Что отличается от недавней нормы?</h4><div class="formula small">Δμ<sub>t</sub><sup>slow</sup> = μ<sub>t</sub> − B<sub>t−1</sub></div><p>Канал сравнивает текущую структуру с адаптивной базовой линией.</p></div>
+      </div>
+
+      <div class="formula small">α<sub>t</sub> = 1 − exp(−Δt / τ)<br>B<sub>t</sub> = (1−α<sub>t</sub>)B<sub>t−1</sub> + α<sub>t</sub>μ<sub>t</sub></div>
+      <p>По умолчанию <code>baseline_tau_seconds = 1.0</code>. Сначала вычисляются оба отклонения относительно прошлого состояния, и только затем обновляется baseline. Иначе часть текущего события преждевременно станет нормой.</p>
+
+      <h3>4. Пространственный приоритет</h3>
+      <p>Каждая область имеет постоянный коэффициент <i>c<sub>r</sub></i>. Центральные области получают вес ближе к 1, периферийные — к <code>peripheral_weight</code>, равному 0.65 по умолчанию.</p>
+      <div class="formula small">X<sub>t,r,i</sub><sup>fast</sup> = c<sub>r</sub>Δμ<sub>i,t,r</sub><sup>fast</sup><br>X<sub>t,r,i</sub><sup>slow</sup> = c<sub>r</sub>Δμ<sub>i,t,r</sub><sup>slow</sup></div>
+      <p>Вес влияет только на конкуренцию. Более сильный периферийный стимул всё равно может победить слабый центральный.</p>
+
+      <h3>5. Один глобальный победитель</h3>
+      <div class="formula">(q<sub>t</sub><sup>*</sup>,r<sub>t</sub><sup>*</sup>,i<sub>t</sub><sup>*</sup>) = arg max |X<sub>t,r,i</sub><sup>q</sup>|</div>
+      <div class="formula">x<sub>t</sub> = X<sub>t,r<sub>t</sub><sup>*</sup>,i<sub>t</sub><sup>*</sup></sub><sup>q<sub>t</sub><sup>*</sup></sup></div>
+      <p>Максимум ищется по модулю, но знак сохраняется. Значение −0.8 побеждает +0.3, и в поток записывается именно −0.8. После деления на фиксированную теоретическую площадь области стандартный результат ограничивается диапазоном <code>[-1, 1]</code>.</p>
+
+      <figure class="article-figure">
+        <img src="assets/images/02-temporal-signal.webp" alt="Преобразование пространственных признаков кадра в временной сигнал x_t">
+        <figcaption>Пространственная динамика кадра сворачивается в один подписанный стимул на каждом шаге.</figcaption>
+      </figure>
+
+      <div class="callout"><b>Один кадр — одно значение.</b> Первый кадр инициализирует <code>previous_mu</code> и <code>baseline_mu</code> и возвращает 0. При 25 FPS одна секунда видео создаёт 25 отсчётов последовательности X<sup>video</sup>.</div>
+    </div>
+  </section>
+
+  <section class="section business" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="part">Часть III<br>Признаки</div>
+        <div><h2>Из зрительного сигнала возникает временная структура</h2><p class="lead">После формирования x<sub>t</sub> алгоритм больше не использует номер области и маски. Он анализирует последовательность как колебательный сигнал.</p></div>
+      </div>
+
+      <h3>Скользящее окно и события</h3>
+      <p>Поток пар <code>(timestamp, x_t)</code> хранится в кольцевом буфере. Стандартное окно содержит последние четыре секунды, а первая секунда используется для прогрева. Пока истории недостаточно, <code>ready=false</code>, а оконные признаки равны нулю.</p>
+
+      <div class="steps">
+        <div class="step"><b>Найти экстремумы</b><p>Положительные максимумы и отрицательные минимумы должны превышать порог по модулю.</p></div>
+        <div class="step"><b>Устранить дубли</b><p>Слишком близкие кандидаты конкурируют, остаётся более сильный.</p></div>
+        <div class="step"><b>Рассчитать окно</b><p>Используются знак, мощность, интервалы, чередование и временной тренд.</p></div>
+      </div>
+
+      <table class="params">
+        <thead><tr><th>Параметр</th><th>По умолчанию</th><th>Назначение</th></tr></thead>
+        <tbody>
+          <tr><td>window_seconds</td><td>4.0 с</td><td>Длительность скользящего окна</td></tr>
+          <tr><td>warmup_seconds</td><td>1.0 с</td><td>Минимальная история до готовности</td></tr>
+          <tr><td>peak_threshold</td><td>0.04</td><td>Минимальный модуль значимого экстремума</td></tr>
+          <tr><td>min_peak_distance_seconds</td><td>0.12 с</td><td>Минимальный интервал между событиями</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Четыре характеристики динамики</h3>
+      <div class="metric-grid">
+        <div class="metric"><strong>activity</strong><span>Подписанное среднее окна с поправкой на наклон контура.</span></div>
+        <div class="metric"><strong>anxiety</strong><span>Нерегулярность: мощность, смены знака и интервалы событий.</span></div>
+        <div class="metric"><strong>tempo</strong><span>Количество значимых максимумов и минимумов в секунду.</span></div>
+        <div class="metric"><strong>deviation</strong><span>RMS-мощность сигнала x<sub>t</sub> в текущем окне.</span></div>
+      </div>
+
+      <h4>Сила отклонения</h4>
+      <div class="formula small">deviation = √[(1/N) Σ x<sub>k</sub><sup>2</sup>]</div>
+      <p>Для нормированного x<sub>t</sub> значение находится в диапазоне [0, 1].</p>
+
+      <h4>Подписанная активность</h4>
+      <div class="formula small">activity = clip(mean(x) + 0.25 · slope · D, −1, 1)</div>
+      <p>Знак отражает направление доминирующего пространственного отклика, а не эмоциональную валентность.</p>
+
+      <h4>Темп событий</h4>
+      <div class="formula small">tempo = N<sub>events</sub> / D</div>
+      <p>Считаются положительные и отрицательные экстремумы. Поэтому синусоида 2 Гц обычно создаёт около четырёх событий в секунду.</p>
+
+      <h4>Нерегулярность</h4>
+      <div class="formula small">anxiety = deviation · [ZCR + tempo · alternation + min(CV<sub>interval</sub>, 3)]</div>
+      <p><code>anxiety</code> — историческое имя математического признака. Он не распознаёт тревогу и не имеет универсальной верхней границы до калибровки.</p>
+
+      <figure class="article-figure">
+        <img src="assets/plots/oscillation-diagnostics.webp" alt="Временные признаки, автокорреляция и частотный спектр видеосигнала">
+        <figcaption>Быстрый x<sub>t</sub> теряет корреляцию раньше, а оконные признаки сохраняют более медленную временную структуру.</figcaption>
+      </figure>
+
+      <h3>Нейтральная калибровка</h3>
+      <p>Даже спокойное видео создаёт ненулевой фон из-за шума матрицы, компрессии, микродвижений, изменения яркости и автоматической экспозиции. Поэтому профиль строится на нейтральном видео тем же алгоритмом и с теми же параметрами.</p>
+
+      <figure class="article-figure">
+        <img src="assets/images/04-neutral-calibration.webp" alt="Калибровка и нормализация зрительных стимулов относительно нейтрального видео">
+        <figcaption>Значимость стимула определяется отклонением от естественного фона системы, а не абсолютным сырым числом.</figcaption>
+      </figure>
+
+      <div class="formula small">s<sub>activity</sub> = clip[(activity − activity<sub>base</sub>) / 2, −1, 1]</div>
+      <div class="formula small">s<sub>anxiety</sub> = clip[(anxiety − anxiety<sub>base</sub>) / scale<sub>anxiety</sub>, −1, 1]</div>
+      <div class="formula small">s<sub>tempo</sub> = clip[(tempo − tempo<sub>base</sub>) / scale<sub>tempo</sub>, −1, 1]</div>
+      <div class="formula small">normalized_deviation = clip(|deviation − deviation<sub>base</sub>|, 0, 1)</div>
+
+      <div class="callout"><b>Текущий ролик не расширяет собственные границы нормализации.</b> Иначе один и тот же стимул получал бы разную силу в зависимости от других кадров записи. Профиль также хранит конфигурацию и не применяется молча при несовместимых FPS, сетке, окне или порогах.</div>
+
+      <h3>Как признаки соотносятся с кадрами</h3>
+      <figure class="article-figure">
+        <img src="assets/images/05-frames-and-features.webp" alt="Сопоставление кадров видео с activity, anxiety, tempo и normalized_deviation">
+        <figcaption>x<sub>t</sub> реагирует на отдельный кадр, а оконные признаки обобщают несколько последних секунд.</figcaption>
+      </figure>
+      <figure class="article-figure">
+        <img src="assets/plots/normalized-timeseries.webp" alt="Нормализованные временные ряды признаков видеостимула">
+        <figcaption>После нейтральной калибровки признаки показывают отклонение от базового сенсорного режима.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section research" id="practice">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="part">Часть IV<br>Практика</div>
+        <div><h2>От установки до обработки в реальном времени</h2><p class="lead">Пакет можно использовать как Python API, CLI для видеофайлов, пример веб-камеры или локальный интерактивный dashboard.</p></div>
+      </div>
+
+      <h3>Установка</h3>
+      <div class="code">python -m pip install "sk-video-stimulus[all]"</div>
+      <p>Минимальная установка для кадров, уже загруженных в память:</p>
+      <div class="code">python -m pip install sk-video-stimulus</div>
+
+      <h3>Потоковая обработка через Python</h3>
+      <div class="code">from sk_video_stimulus import VideoFeatureExtractor
+
+extractor = VideoFeatureExtractor()
+
+for frame in frames:
+    sample = extractor.process_frame(frame)
+    if sample.ready:
+        print(
+            sample.x_t,
+            sample.activity,
+            sample.anxiety,
+            sample.tempo,
+            sample.deviation,
+        )</div>
+      <p>Экстрактор хранит предыдущие μ-компоненты, адаптивный baseline и скользящее окно. Методы <code>state_dict()</code> и <code>load_state_dict()</code> позволяют продолжить поток без потери временной истории.</p>
+
+      <h3>Готовые примеры</h3>
+      <div class="cards2">
+        <div class="card"><span class="tag">Видеофайл</span><div class="code">sk-video-stimulus-video \
+  examples/videos/test_25fps.mp4</div><p>OpenCV читает кадры, а расчёт выполняется публичным API пакета.</p></div>
+        <div class="card"><span class="tag">Веб-камера</span><div class="code">sk-video-stimulus-webcam --camera 0</div><p>Показывает поток и текущие значения признаков. Выход — Q или Esc.</p></div>
+      </div>
+
+      <h3>Нейтральный профиль и тестовое видео</h3>
+      <div class="code">sk-video-stimulus examples/videos/neutral_25fps.mp4 \
+  --calibrate-profile results/video_neutral_profile.json \
+  --output results/neutral_features.csv
+
+sk-video-stimulus examples/videos/test_25fps.mp4 \
+  --profile results/video_neutral_profile.json \
+  --output results/test_features.csv</div>
+
+      <h3>Web dashboard</h3>
+      <p>Dashboard принимает браузерную камеру или локальный видеофайл, показывает исходное изображение и строит графики x<sub>t</sub>, <code>activity</code>, <code>anxiety</code>, <code>tempo</code> и <code>deviation</code> в реальном времени.</p>
+      <figure class="article-figure">
+        <img src="assets/images/09-realtime-dashboard.png" alt="Web dashboard sk_video_stimulus в реальном времени">
+        <figcaption>Слева — видеопоток и последние числа, справа — недавняя история быстрого сигнала и четырёх оконных признаков.</figcaption>
+      </figure>
+      <div class="code">python -m pip install "sk-video-stimulus[demo]"
+sk-video-stimulus-demo
+# открыть http://127.0.0.1:8000</div>
+      <p>Обработка выполняется локально. Dashboard показывает сырые признаки одного запуска; для сравнения камер и записей применяется нейтральный профиль через CLI или Python API.</p>
+
+      <h3>Опциональная интеграция с эмоциональным состоянием</h3>
+      <p>Основной результат пакета — нормализованные сенсорные признаки. Экспериментальный <code>VideoProtoEmotionMapper</code> может преобразовать их в потенциальные направления влияния на 28-компонентное состояние:</p>
+      <div class="formula small">p<sub>t</sub><sup>video</sup> = (s<sub>t</sub><sup>video</sup>)<sup>T</sup>M<sub>signed</sub> + |s<sub>t</sub><sup>video</sup>|<sup>T</sup>M<sub>magnitude</sub></div>
+      <div class="formula small">A<sub>t</sub><sup>video</sup> = η<sub>video</sub> · normalized_deviation<sub>t</sub> · (previous_state<sub>t−1</sub> ⊙ p<sub>t</sub><sup>video</sup>)</div>
+
+      <figure class="article-figure">
+        <img src="assets/images/06-proto-emotion-mapping.webp" alt="Преобразование нормализованных сенсорных признаков в протоэмоциональный вклад">
+        <figcaption>Протоэмоции не создают готовую эмоцию: они масштабируют уже активные компоненты контекста.</figcaption>
+      </figure>
+
+      <p>Если предыдущее состояние равно нулю, низкоуровневый канал не создаёт эмоцию из ничего. Одинаковая динамика при разных состояниях агента даёт разные контекстные поправки.</p>
+
+      <figure class="article-figure">
+        <img src="assets/images/07-multimodal-architecture.webp" alt="Общая архитектура аудио, видео, протоэмоций и эмоционального состояния">
+        <figcaption>Семантический и сенсорный каналы объединяются только на уровне системы эмоционального состояния.</figcaption>
+      </figure>
+
+      <div class="cards2">
+        <div class="card"><h4>Семантика события</h4><p><a href="https://github.com/iproxy3d/florence2-svoa">Florence-2 SVOA</a> отвечает на вопрос, что происходит в кадре.</p></div>
+        <div class="card"><h4>Сенсорная динамика</h4><p><code>sk_video_stimulus</code> измеряет силу, частоту и нерегулярность изменения зрительного потока.</p></div>
+        <div class="card"><h4>Аудиоканал</h4><p><a href="https://github.com/iproxy3d/sk_speech">sk_speech</a> анализирует акустическую динамику и управляет выразительностью речи.</p></div>
+        <div class="card"><h4>Состояние и память</h4><p><a href="https://github.com/iproxy3d/emotional-state-agents">emotional-state-agents</a> объединяет смысл, стимулы, характер, память и прошлое состояние.</p></div>
+      </div>
+
+      <figure class="article-figure">
+        <img src="assets/images/08-contextual-stimulus.webp" alt="Контекстуальное действие зрительного и аудиостимула на состояние агента">
+        <figcaption>Сенсорные изменения усиливают или ослабляют контекст, но не заменяют его интерпретацию.</figcaption>
+      </figure>
+
+      <h3>Контрольные проверки</h3>
+      <div class="checks">
+        <div class="check"><b>Первый кадр</b>Инициализирует оба состояния и возвращает x<sub>t</sub> = 0.</div>
+        <div class="check"><b>Неподвижная сцена</b>После инициализации x<sub>t</sub> остаётся около нуля.</div>
+        <div class="check"><b>Однокадровый импульс</b>Создаёт крупный быстрый отклик и одно событие.</div>
+        <div class="check"><b>Новое устойчивое положение</b>Fast уменьшается, slow сохраняется до адаптации baseline.</div>
+        <div class="check"><b>Регулярное движение</b>Формирует стабильный tempo.</div>
+        <div class="check"><b>Нерегулярное чередование</b>Повышает показатель anxiety.</div>
+      </div>
+
+      <h3>Ограничения</h3>
+      <div class="callout warning"><b>Это исследовательская реализация.</b> Признаки зависят от FPS, разрешения, компрессии, освещения и положения камеры. Алгоритм не отделяет движение человека от движения фона или камеры, а текущие пороги ещё не валидированы на широком наборе устройств и сцен.</div>
+
+      <h3>Происхождение метода</h3>
+      <p>Идея матриц визуальных масс и многокомпонентных пространственных откликов связана с ранним подходом, описанным в патенте <a href="https://patents.google.com/patent/RU2322694C2/ru">RU2322694C2 «Способ обработки изображений»</a>.</p>
+      <p><code>sk_video_stimulus</code> не реализует весь иерархический алгоритм патента. Пакет использует компактное ядро 4 × 4, а быстрый и медленный temporal-каналы, глобальная конкуренция, x<sub>t</sub>, оконные признаки, калибровка, API и dashboard относятся к данной реализации.</p>
+
+      <div class="source-note">Статья является самостоятельной HTML-адаптацией материалов разделов 17–19 проекта <a href="https://iproxy3d.github.io/emotional-state-agents/">«Эмоциональное состояние агента»</a> и приведена в соответствие с кодом <code>sk_video_stimulus 0.3.0</code>. Исходная статья не изменялась.</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap">
+      <b>sk_video_stimulus</b> · потоковое извлечение динамики зрительного стимула
+      <div class="footer-links">
+        <a href="https://github.com/iproxy3d/sk_video_stimulus">GitHub</a>
+        <a href="https://pypi.org/project/sk-video-stimulus/">PyPI</a>
+        <a href="https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/dashboard.md">Документация dashboard</a>
+        <a href="#top">В начало ↑</a>
+      </div>
+    </div>
+  </footer>
+</main>
+</body>
+</html>

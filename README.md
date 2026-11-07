@@ -137,12 +137,16 @@ sk-video-stimulus-webcam --camera 0
 
 Dashboard — отдельная демонстрация возможностей алгоритма. Он принимает поток браузерной камеры или локальный видеофайл, показывает исходное изображение и в реальном времени строит графики `x_t`, `activity`, `anxiety`, `tempo` и `deviation`.
 
+![Dashboard реального времени](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/09-realtime-dashboard.png)
+
 ```bash
 python -m pip install "sk-video-stimulus[demo]"
 sk-video-stimulus-demo
 ```
 
 Затем откройте [http://127.0.0.1:8000](http://127.0.0.1:8000). Обработка выполняется локально: браузер отправляет кадры только запущенному на компьютере Python-серверу. Полная инструкция: [docs/dashboard.md](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/dashboard.md).
+
+Цифровые карточки показывают последнее рассчитанное значение, а графики — его недавнюю историю. `events` — число значимых максимумов и минимумов в текущем окне анализа, `кадр` — номер обработанного кадра, `режим` сообщает о прогреве или готовности окна. Dashboard показывает сырые признаки текущей записи; для сравнения разных камер и видео используйте [нейтральную калибровку](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/calibration.md).
 
 ## Что происходит внутри
 

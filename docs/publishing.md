@@ -47,8 +47,8 @@ python -m twine check dist/*
 Должны появиться два файла:
 
 ```text
-dist/sk_video_stimulus-0.2.0-py3-none-any.whl
-dist/sk_video_stimulus-0.2.0.tar.gz
+dist/sk_video_stimulus-0.3.0-py3-none-any.whl
+dist/sk_video_stimulus-0.3.0.tar.gz
 ```
 
 ## 5. Опубликовать версию `0.2.0`
@@ -56,8 +56,8 @@ dist/sk_video_stimulus-0.2.0.tar.gz
 1. Убедитесь, что изменения находятся в ветке `main`, а GitHub Actions `tests` завершился успешно.
 2. Откройте страницу **Releases** репозитория.
 3. Нажмите **Draft a new release**.
-4. Создайте тег `v0.2.0` из ветки `main`.
-5. Заголовок выпуска укажите `sk-video-stimulus 0.2.0`.
+4. Создайте тег `v0.3.0` из ветки `main`.
+5. Заголовок выпуска укажите `sk-video-stimulus 0.3.0`.
 6. Нажмите **Publish release**.
 7. Откройте запущенный workflow **Публикация в PyPI** и подтвердите окружение `pypi`, если включена ручная проверка.
 
@@ -99,14 +99,14 @@ sk-video-stimulus-video --help
 sk-video-stimulus-webcam --help
 ```
 
-Ожидаемая версия: `0.2.0`.
+Ожидаемая версия: `0.3.0`.
 
 ## Следующие выпуски
 
 Номер уже опубликованной версии нельзя использовать повторно. Для следующего выпуска:
 
-1. измените `project.version` в `pyproject.toml`, например на `0.2.1`;
+1. измените `project.version` в `pyproject.toml`, например на `0.3.1`;
 2. отправьте изменения в `main` и дождитесь успешных тестов;
-3. создайте новый GitHub Release с тегом `v0.2.1`.
+3. создайте новый GitHub Release с тегом `v0.3.1`.
 
 `sk_video_stimulus.__version__` читается из метаданных установленного пакета, поэтому отдельно менять версию в `src/sk_video_stimulus/__init__.py` не требуется.

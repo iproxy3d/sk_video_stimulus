@@ -38,25 +38,126 @@
 @media(max-width:850px){.bio-mask-demo{grid-template-columns:1fr}.bio-mask-grid{max-width:230px}.bio-level{padding:18px}}
 
 
-/* Vertical biological-computational pipeline: intentionally separate from .flow used elsewhere */
-.bio-pipeline{margin:26px 0 30px;padding:19px 15px 11px;border:1px solid #3a3a3a;border-radius:14px;background:#050505;color:#e7e9ed}
-.bio-pipeline-heading{font-size:16px;line-height:1.4;font-weight:800;margin:0 0 16px;color:#ededee}
-.bio-pipeline-step{padding:10px 15px;text-align:center}
-.bio-pipeline-step strong,.bio-pipeline-branch strong{display:block;color:#e8e8e8;font-size:16px;font-weight:800;line-height:1.35}
-.bio-pipeline-step span,.bio-pipeline-branch span{display:block;margin-top:4px;color:#c6c9d0;font-size:13px;line-height:1.5}
-.bio-pipeline-step--spatial strong{color:#ececfd}
-.bio-pipeline-step--competition strong{color:#f6c6b5}
-.bio-pipeline-step--signal strong{color:#d6d8ff}
-.bio-pipeline-step--result{background:#001714;border-radius:9px;padding:16px 12px;margin:0 0 12px}
-.bio-pipeline-arrow{color:#c5c8cd;font-size:20px;line-height:1.3;text-align:center;margin:1px 0}
-.bio-pipeline-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:2px 0}
-.bio-pipeline-branch{min-height:71px;border-radius:9px;text-align:center;padding:13px 8px 10px;display:flex;flex-direction:column;justify-content:center}
-.bio-pipeline-branch--fast{background:#06101e}
-.bio-pipeline-branch--slow{background:#001311}
-.bio-pipeline figcaption{color:#c8c8c8;font-size:13px;line-height:1.48;text-align:left}
-.bio-pipeline figcaption a{color:#e7ebf3}
-.bio-pipeline figcaption code{font:700 13px/1.45 Consolas,monospace;background:#242424;color:#fff;padding:2px 4px;border-radius:4px}
-@media(max-width:550px){.bio-pipeline{padding:17px 10px 12px}.bio-pipeline-heading{font-size:15px;margin-bottom:12px}.bio-pipeline-step{padding:9px 5px}.bio-pipeline-branches{gap:7px}.bio-pipeline-branch{padding:12px 6px;min-height:93px}.bio-pipeline-branch strong,.bio-pipeline-step strong{font-size:14px}.bio-pipeline-branch span,.bio-pipeline-step span{font-size:12px}.bio-pipeline figcaption{font-size:12px}}
+/* Biological-computational diagram: match the article's light design tokens */
+.bio-pipeline{
+  margin:26px 0 30px;
+  padding:20px 18px 14px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fafbfd;
+  color:var(--ink);
+  box-shadow:0 12px 32px rgba(33,64,105,.06);
+}
+.bio-pipeline-heading{
+  font-size:16px;
+  line-height:1.4;
+  font-weight:800;
+  margin:0 0 18px;
+  color:var(--ink);
+}
+.bio-pipeline-step{
+  padding:12px 14px;
+  text-align:center;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+}
+.bio-pipeline-step strong,
+.bio-pipeline-branch strong{
+  display:block;
+  color:var(--ink);
+  font-size:16px;
+  font-weight:800;
+  line-height:1.35;
+}
+.bio-pipeline-step span,
+.bio-pipeline-branch span{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.bio-pipeline-step--spatial{
+  background:var(--general-soft);
+  border-color:#ddd4f6;
+}
+.bio-pipeline-step--spatial strong{color:var(--general)}
+.bio-pipeline-step--competition{
+  background:var(--warm-soft);
+  border-color:#f1d6bf;
+}
+.bio-pipeline-step--competition strong{color:#9b5427}
+.bio-pipeline-step--signal{
+  background:var(--tech-soft);
+  border-color:#d6e4f5;
+}
+.bio-pipeline-step--signal strong{color:#294f83}
+.bio-pipeline-step--result{
+  background:var(--business-soft);
+  border-color:#cdeae4;
+  padding:16px 14px;
+  margin:0 0 12px;
+}
+.bio-pipeline-step--result strong{color:#0b6765}
+.bio-pipeline-arrow{
+  color:#8b96a8;
+  font-size:20px;
+  line-height:1.3;
+  text-align:center;
+  margin:3px 0;
+}
+.bio-pipeline-branches{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin:2px 0;
+}
+.bio-pipeline-branch{
+  min-height:80px;
+  border-radius:14px;
+  text-align:center;
+  padding:15px 12px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border:1px solid var(--line);
+  background:#fff;
+}
+.bio-pipeline-branch--fast{
+  background:var(--tech-soft);
+  border-color:#d6e4f5;
+}
+.bio-pipeline-branch--fast strong{color:#294f83}
+.bio-pipeline-branch--slow{
+  background:var(--business-soft);
+  border-color:#cdeae4;
+}
+.bio-pipeline-branch--slow strong{color:#0b6765}
+.bio-pipeline figcaption{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+  text-align:left;
+}
+.bio-pipeline figcaption a{color:var(--tech)}
+.bio-pipeline figcaption code{
+  font:700 13px/1.45 Consolas,monospace;
+  background:#eef2f7;
+  color:var(--ink);
+  padding:2px 5px;
+  border-radius:4px;
+}
+@media(max-width:550px){
+  .bio-pipeline{padding:16px 10px 12px}
+  .bio-pipeline-heading{font-size:15px;margin-bottom:14px}
+  .bio-pipeline-step{padding:10px 8px}
+  .bio-pipeline-branches{gap:8px}
+  .bio-pipeline-branch{padding:12px 8px;min-height:92px}
+  .bio-pipeline-branch strong,.bio-pipeline-step strong{font-size:14px}
+  .bio-pipeline-branch span,.bio-pipeline-step span{font-size:12px}
+  .bio-pipeline figcaption{font-size:12px}
+}
 
 </style>
 </head>

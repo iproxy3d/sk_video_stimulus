@@ -37,6 +37,27 @@
 .bio-sources a{color:#315e9d}
 @media(max-width:850px){.bio-mask-demo{grid-template-columns:1fr}.bio-mask-grid{max-width:230px}.bio-level{padding:18px}}
 
+
+/* Vertical biological-computational pipeline: intentionally separate from .flow used elsewhere */
+.bio-pipeline{margin:26px 0 30px;padding:19px 15px 11px;border:1px solid #3a3a3a;border-radius:14px;background:#050505;color:#e7e9ed}
+.bio-pipeline-heading{font-size:16px;line-height:1.4;font-weight:800;margin:0 0 16px;color:#ededee}
+.bio-pipeline-step{padding:10px 15px;text-align:center}
+.bio-pipeline-step strong,.bio-pipeline-branch strong{display:block;color:#e8e8e8;font-size:16px;font-weight:800;line-height:1.35}
+.bio-pipeline-step span,.bio-pipeline-branch span{display:block;margin-top:4px;color:#c6c9d0;font-size:13px;line-height:1.5}
+.bio-pipeline-step--spatial strong{color:#ececfd}
+.bio-pipeline-step--competition strong{color:#f6c6b5}
+.bio-pipeline-step--signal strong{color:#d6d8ff}
+.bio-pipeline-step--result{background:#001714;border-radius:9px;padding:16px 12px;margin:0 0 12px}
+.bio-pipeline-arrow{color:#c5c8cd;font-size:20px;line-height:1.3;text-align:center;margin:1px 0}
+.bio-pipeline-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:2px 0}
+.bio-pipeline-branch{min-height:71px;border-radius:9px;text-align:center;padding:13px 8px 10px;display:flex;flex-direction:column;justify-content:center}
+.bio-pipeline-branch--fast{background:#06101e}
+.bio-pipeline-branch--slow{background:#001311}
+.bio-pipeline figcaption{color:#c8c8c8;font-size:13px;line-height:1.48;text-align:left}
+.bio-pipeline figcaption a{color:#e7ebf3}
+.bio-pipeline figcaption code{font:700 13px/1.45 Consolas,monospace;background:#242424;color:#fff;padding:2px 4px;border-radius:4px}
+@media(max-width:550px){.bio-pipeline{padding:17px 10px 12px}.bio-pipeline-heading{font-size:15px;margin-bottom:12px}.bio-pipeline-step{padding:9px 5px}.bio-pipeline-branches{gap:7px}.bio-pipeline-branch{padding:12px 6px;min-height:93px}.bio-pipeline-branch strong,.bio-pipeline-step strong{font-size:14px}.bio-pipeline-branch span,.bio-pipeline-step span{font-size:12px}.bio-pipeline figcaption{font-size:12px}}
+
 </style>
 </head>
 <body>
@@ -143,14 +164,45 @@
         </figure>
 
         <h4>От локальных откликов к динамике видеопотока</h4>
-        <div class="flow" aria-label="Упрощённый вычислительный конвейер">
-          <div class="flowbox">Кадр<small>пространственные области</small></div>
-          <div class="flowbox">15 масок<small>локальная избирательность</small></div>
-          <div class="flowbox">Fast / Slow<small>история и адаптивный фон</small></div>
-          <div class="flowbox">x<sub>t</sub><small>один выбранный отклик</small></div>
-          <div class="flowbox">4 признака<small>динамика во времени</small></div>
-        </div>
-        <p class="source-note">Схема соответствует вычислительному конвейеру в <a href="https://github.com/iproxy3d/sk_video_stimulus/blob/main/src/sk_video_stimulus/extractor.py"><code>extractor.py</code></a>. Она не изображает анатомическую последовательность работы сетчатки и зрительной коры.</p>
+        <figure class="bio-pipeline" aria-label="Вычислительный конвейер sk_video_stimulus: от видеопотока через пространственные компоненты, быстрый и медленный каналы к одномерному сигналу и четырём характеристикам динамики">
+          <div class="bio-pipeline-heading">Что реализовано в проекте</div>
+          <div class="bio-pipeline-step">
+            <strong>Видеопоток</strong>
+            <span>Последовательность изображений I<sub>t</sub></span>
+          </div>
+          <div class="bio-pipeline-arrow" aria-hidden="true">↓</div>
+          <div class="bio-pipeline-step bio-pipeline-step--spatial">
+            <strong>Локальные пространственные компоненты</strong>
+            <span>16 областей × 15 контрастных масок</span>
+          </div>
+          <div class="bio-pipeline-arrow" aria-hidden="true">↓</div>
+          <div class="bio-pipeline-branches">
+            <div class="bio-pipeline-branch bio-pipeline-branch--fast">
+              <strong>Fast</strong>
+              <span>Изменение относительно предыдущего кадра</span>
+            </div>
+            <div class="bio-pipeline-branch bio-pipeline-branch--slow">
+              <strong>Slow</strong>
+              <span>Отклонение от адаптивного фона</span>
+            </div>
+          </div>
+          <div class="bio-pipeline-arrow" aria-hidden="true">↓</div>
+          <div class="bio-pipeline-step bio-pipeline-step--competition">
+            <strong>Конкуренция откликов</strong>
+            <span>Выбор максимального изменения по модулю</span>
+          </div>
+          <div class="bio-pipeline-arrow" aria-hidden="true">↓</div>
+          <div class="bio-pipeline-step bio-pipeline-step--signal">
+            <strong>Временной сигнал x<sub>t</sub></strong>
+            <span>Одно число для каждого кадра</span>
+          </div>
+          <div class="bio-pipeline-arrow" aria-hidden="true">↓</div>
+          <div class="bio-pipeline-step bio-pipeline-step--result">
+            <strong>Анализ динамики за несколько секунд</strong>
+            <span>activity · anxiety · tempo · deviation</span>
+          </div>
+          <figcaption>Схема соответствует вычислительному конвейеру в <a href="https://github.com/iproxy3d/sk_video_stimulus/blob/main/src/sk_video_stimulus/extractor.py"><code>extractor.py</code></a>. Это инженерная система, а не изображение реальных нейронных цепей.</figcaption>
+        </figure>
 
         <nav class="bio-subnav" aria-label="Уровни нейробиологического сопоставления">
           <a href="#neuro-direct">Подтверждённые принципы</a>

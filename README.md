@@ -5,6 +5,16 @@
 
 **Потоковое преобразование видео в низкоуровневые характеристики динамики зрительного стимула.**
 
+## 📖 Иллюстрированная статья о методе
+
+**[От видеокадров к динамике зрительного стимула — читать статью](https://iproxy3d.github.io/sk_video_stimulus/)**
+
+В статье подробно и наглядно объясняется, как работает `sk_video_stimulus`: от пространственного кодирования кадров и обнаружения изменений (`fast/slow`) до выбора доминирующего сигнала `x_t`, временного анализа, четырёх признаков динамики и нейтральной калибровки.
+
+Отдельная часть посвящена **параллелям с нейробиологией зрения и психологией**: рецептивные поля, адаптация, зрительное внимание, временная интеграция и контекстно-зависимая модуляция эмоционального состояния. Иллюстрации и ссылки на научные исследования помогают отличать **экспериментально установленные принципы** от **авторских математических решений и упрощений**.
+
+**Техническая документация:**
+
 [HTML-статья о методе](https://iproxy3d.github.io/sk_video_stimulus/) · [Алгоритм](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/algorithm.md) · [Калибровка](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/calibration.md) · [Признаки](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/features.md) · [Примеры](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/examples.md) · [Web dashboard](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/dashboard.md) · [Интеграция](https://github.com/iproxy3d/sk_video_stimulus/blob/main/docs/emotional-state-integration.md)
 
 ![Из кадров видео во временную структуру зрительных стимулов](https://raw.githubusercontent.com/iproxy3d/sk_video_stimulus/main/assets/images/03-temporal-structure.webp)
